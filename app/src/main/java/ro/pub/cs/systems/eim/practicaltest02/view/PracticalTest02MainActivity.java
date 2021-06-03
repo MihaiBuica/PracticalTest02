@@ -12,6 +12,8 @@ import android.widget.Toast;
 
 import ro.pub.cs.systems.eim.practicaltest02.R;
 import ro.pub.cs.systems.eim.practicaltest02.general.Constants;
+import ro.pub.cs.systems.eim.practicaltest02.network.ClientThread;
+import ro.pub.cs.systems.eim.practicaltest02.network.ServerThread;
 
 public class PracticalTest02MainActivity extends AppCompatActivity {
 
@@ -29,8 +31,8 @@ public class PracticalTest02MainActivity extends AppCompatActivity {
     private Button resetButton = null;
     private TextView responeServerTextView = null;
 
-//    private ServerThread serverThread = null;
-//    private ClientThread clientThread = null;
+    private ServerThread serverThread = null;
+    private ClientThread clientThread = null;
 
     private ConnectButtonClickListener connectButtonClickListener = new ConnectButtonClickListener();
     private class ConnectButtonClickListener implements Button.OnClickListener {
@@ -38,17 +40,17 @@ public class PracticalTest02MainActivity extends AppCompatActivity {
         @Override
         public void onClick(View view) {
             Log.i(Constants.TAG, "[MAIN ACTIVITY] Server button");;
-//            String serverPort = serverPortEditText.getText().toString();
-//            if (serverPort == null || serverPort.isEmpty()) {
-//                Toast.makeText(getApplicationContext(), "[MAIN ACTIVITY] Server port should be filled!", Toast.LENGTH_SHORT).show();
-//                return;
-//            }
-//            serverThread = new ServerThread(Integer.parseInt(serverPort));
-//            if (serverThread.getServerSocket() == null) {
-//                Log.e(Constants.TAG, "[MAIN ACTIVITY] Could not create server thread!");
-//                return;
-//            }
-//            serverThread.start();
+            String serverPort = serverPortEditText.getText().toString();
+            if (serverPort == null || serverPort.isEmpty()) {
+                Toast.makeText(getApplicationContext(), "[MAIN ACTIVITY] Server port should be filled!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+            serverThread = new ServerThread(Integer.parseInt(serverPort));
+            if (serverThread.getServerSocket() == null) {
+                Log.e(Constants.TAG, "[MAIN ACTIVITY] Could not create server thread!");
+                return;
+            }
+            serverThread.start();
         }
 
     }
@@ -57,7 +59,40 @@ public class PracticalTest02MainActivity extends AppCompatActivity {
     private class ClientButtonClickListener implements Button.OnClickListener {
         @Override
         public void onClick(View view) {
-            Log.i(Constants.TAG, "[MAIN ACTIVITY] Client button");;
+            String operation = "";
+            if (view.getId() == R.id.set_button)
+            {
+                operation = "set";
+            }
+            else if (view.getId() == R.id.reset_button)
+            {
+                operation = "reset";
+            }
+            else if (view.getId() == R.id.poll_button)
+            {
+                operation = "poll";
+            }
+            Log.i(Constants.TAG, "[MAIN ACTIVITY] Client button " + operation);
+
+            String clientAddress = clientAddressEditText.getText().toString();
+            String clientPort = clientPortEditText.getText().toString();
+            if (clientAddress == null || clientAddress.isEmpty()
+                    || clientPort == null || clientPort.isEmpty()) {
+                Toast.makeText(getApplicationContext(), "[MAIN ACTIVITY] Client connection parameters should be filled!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            if (serverThread == null || !serverThread.isAlive()) {
+                Toast.makeText(getApplicationContext(), "[MAIN ACTIVITY] There is no server to connect to!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String hour = hourEditText.getText().toString();
+            String min = minEditText.getText().toString();
+            responeServerTextView.setText(Constants.EMPTY_STRING);
+
+            clientThread = new ClientThread(clientAddress, Integer.parseInt(clientPort), hour, min, operation, responeServerTextView);
+            clientThread.start();
         }
     }
 
