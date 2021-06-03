@@ -9,10 +9,13 @@ import java.util.HashMap;
 
 import cz.msebera.android.httpclient.client.ClientProtocolException;
 import ro.pub.cs.systems.eim.practicaltest02.general.Constants;
+import ro.pub.cs.systems.eim.practicaltest02.model.ServerInformationModel;
 
 public class ServerThread extends Thread {
     private int port = 0;
     private ServerSocket serverSocket = null;
+    private HashMap<String, ServerInformationModel> data = null;
+
 
     public ServerThread(int port) {
         this.port = port;
@@ -24,7 +27,7 @@ public class ServerThread extends Thread {
                 ioException.printStackTrace();
             }
         }
-//        this.data = new HashMap<>();
+        this.data = new HashMap<>();
     }
 
     public int getPort() {
@@ -43,6 +46,14 @@ public class ServerThread extends Thread {
         this.serverSocket = serverSocket;
     }
 
+    public synchronized HashMap<String, ServerInformationModel> getData() {
+        return data;
+    }
+
+    public synchronized void setData(String key, ServerInformationModel value) {
+        this.data.put(key, value);
+    }
+
     @Override
     public void run() {
         try {
@@ -50,8 +61,8 @@ public class ServerThread extends Thread {
                 Log.i(Constants.TAG, "[SERVER THREAD] Waiting for a client invocation...");
                 Socket socket = serverSocket.accept();
                 Log.i(Constants.TAG, "[SERVER THREAD] A connection request was received from " + socket.getInetAddress() + ":" + socket.getLocalPort());
-//                CommunicationThread communicationThread = new CommunicationThread(this, socket);
-//                communicationThread.start();
+                CommunicationThread communicationThread = new CommunicationThread(this, socket);
+                communicationThread.start();
             }
         } catch (ClientProtocolException clientProtocolException) {
             Log.e(Constants.TAG, "[SERVER THREAD] An exception has occurred: " + clientProtocolException.getMessage());
