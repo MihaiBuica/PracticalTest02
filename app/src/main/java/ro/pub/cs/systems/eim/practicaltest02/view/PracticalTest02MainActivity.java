@@ -120,4 +120,13 @@ public class PracticalTest02MainActivity extends AppCompatActivity {
 
         responeServerTextView = (TextView)findViewById(R.id.server_info_text_view);
     }
+
+    @Override
+    protected void onDestroy() {
+        Log.i(Constants.TAG, "[MAIN ACTIVITY] onDestroy() callback method has been invoked");
+        if (serverThread != null) {
+            serverThread.stopThread();
+        }
+        super.onDestroy();
+    }
 }

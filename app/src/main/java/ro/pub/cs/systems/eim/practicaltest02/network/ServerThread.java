@@ -54,6 +54,10 @@ public class ServerThread extends Thread {
         this.data.put(key, value);
     }
 
+    public void setData(HashMap<String, ServerInformationModel> data) {
+        this.data = data;
+    }
+
     @Override
     public void run() {
         try {
@@ -73,6 +77,20 @@ public class ServerThread extends Thread {
             Log.e(Constants.TAG, "[SERVER THREAD] An exception has occurred: " + ioException.getMessage());
             if (Constants.DEBUG) {
                 ioException.printStackTrace();
+            }
+        }
+    }
+
+    public void stopThread() {
+        interrupt();
+        if (serverSocket != null) {
+            try {
+                serverSocket.close();
+            } catch (IOException ioException) {
+                Log.e(Constants.TAG, "[SERVER THREAD] An exception has occurred: " + ioException.getMessage());
+                if (Constants.DEBUG) {
+                    ioException.printStackTrace();
+                }
             }
         }
     }

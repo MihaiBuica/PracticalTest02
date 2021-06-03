@@ -46,6 +46,9 @@ public class ClientThread extends Thread {
                 return;
             }
 
+            printWriter.println("id");
+            printWriter.flush();
+
             if (opServer.equals("set"))
             {
                 printWriter.println(opServer+","+hourServer+","+minServer+"\n");

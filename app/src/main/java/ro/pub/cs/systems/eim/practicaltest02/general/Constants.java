@@ -7,4 +7,6 @@ public interface Constants {
 
 
     final public static String EMPTY_STRING = "";
+    final public static String WEB_SERVICE_ADDRESS = "utcnist.colorado.edu";
+
 }
